@@ -1,0 +1,76 @@
+music_mad.c:  mp3_mad->freerw = SDL_TRUE;
+music_mad.c:	mp3_mad->rw = rw;
+music_mad.c:	mp3_mad->freerw = SDL_FALSE;
+music_mad.c:	mad_stream_init(&mp3_mad->stream);
+music_mad.c:	mad_frame_init(&mp3_mad->frame);
+music_mad.c:	mad_synth_init(&mp3_mad->synth);
+music_mad.c:	mp3_mad->frames_read = 0;
+music_mad.c:	mad_timer_reset(&mp3_mad->next_frame_start);
+music_mad.c:	mp3_mad->volume = MIX_MAX_VOLUME;
+music_mad.c:	mp3_mad->status = 0;
+music_mad.c:	mp3_mad->output_begin = 0;
+music_mad.c:	mp3_mad->output_end = 0;
+music_mad.c:	mp3_mad->mixer = *mixer;
+music_mad.c:  mad_stream_finish(&mp3_mad->stream);
+music_mad.c:  mad_frame_finish(&mp3_mad->frame);
+music_mad.c:  mad_synth_finish(&mp3_mad->synth);
+music_mad.c:  if (mp3_mad->freerw) {
+music_mad.c:	SDL_FreeRW(mp3_mad->rw);
+music_mad.c:  mp3_mad->status |= MS_playing;
+music_mad.c:  mp3_mad->status &= ~MS_playing;
+music_mad.c:  return ((mp3_mad->status & MS_playing) != 0);
+music_mad.c:  if (mp3_mad->stream.buffer == NULL || 
+music_mad.c:	  mp3_mad->stream.error == MAD_ERROR_BUFLEN) {
+music_mad.c:	if (mp3_mad->stream.next_frame != NULL) {
+music_mad.c:	  remaining = mp3_mad->stream.bufend - mp3_mad->stream.next_frame;
+music_mad.c:	  memmove(mp3_mad->input_buffer, mp3_mad->stream.next_frame, remaining);
+music_mad.c:	  read_start = mp3_mad->input_buffer + remaining;
+music_mad.c:	  read_start = mp3_mad->input_buffer;
+music_mad.c:	read_size = SDL_RWread(mp3_mad->rw, read_start, 1, read_size);
+music_mad.c:	  if ((mp3_mad->status & (MS_input_eof | MS_input_error)) == 0) {
+music_mad.c:		  mp3_mad->status |= MS_input_eof;
+music_mad.c:		  mp3_mad->status |= MS_input_error;
+music_mad.c:	mad_stream_buffer(&mp3_mad->stream, mp3_mad->input_buffer,
+music_mad.c:	mp3_mad->stream.error = MAD_ERROR_NONE;
+music_mad.c:  if (mad_frame_decode(&mp3_mad->frame, &mp3_mad->stream)) {
+music_mad.c:	if (MAD_RECOVERABLE(mp3_mad->stream.error)) {
+music_mad.c:	} else if (mp3_mad->stream.error == MAD_ERROR_BUFLEN) {
+music_mad.c:	  mp3_mad->status |= MS_decode_error;
+music_mad.c:  mp3_mad->frames_read++;
+music_mad.c:  mad_timer_add(&mp3_mad->next_frame_start, mp3_mad->frame.header.duration);
+music_mad.c:  mad_synth_frame(&mp3_mad->synth, &mp3_mad->frame);
+music_mad.c:  pcm = &mp3_mad->synth.pcm;
+music_mad.c:  out = mp3_mad->output_buffer + mp3_mad->output_end;
+music_mad.c:  if ((mp3_mad->status & MS_cvt_decoded) == 0) {
+music_mad.c:	mp3_mad->status |= MS_cvt_decoded;
+music_mad.c:	SDL_BuildAudioCVT(&mp3_mad->cvt, AUDIO_S16, pcm->channels, mp3_mad->frame.header.samplerate, mp3_mad->mixer.format, mp3_mad->mixer.channels, mp3_mad->mixer.freq);
+music_mad.c:  mp3_mad->output_end = out - mp3_mad->output_buffer;
+music_mad.c:  /*assert(mp3_mad->output_end <= MAD_OUTPUT_BUFFER_SIZE);*/
+music_mad.c:  if ((mp3_mad->status & MS_playing) == 0) {
+music_mad.c:	if (mp3_mad->output_end == mp3_mad->output_begin) {
+music_mad.c:	  mp3_mad->output_begin = 0;
+music_mad.c:	  mp3_mad->output_end = 0;
+music_mad.c:		if ((mp3_mad->status & MS_error_flags) != 0) {
+music_mad.c:		  mp3_mad->status &= ~MS_playing;
+music_mad.c:		mp3_mad->cvt.buf = mp3_mad->output_buffer;
+music_mad.c:		mp3_mad->cvt.len = mp3_mad->output_end;
+music_mad.c:		mp3_mad->output_end = (int)(mp3_mad->output_end * mp3_mad->cvt.len_ratio);
+music_mad.c:		/*assert(mp3_mad->output_end <= MAD_OUTPUT_BUFFER_SIZE);*/
+music_mad.c:		SDL_ConvertAudio(&mp3_mad->cvt);
+music_mad.c:	num_bytes = mp3_mad->output_end - mp3_mad->output_begin;
+music_mad.c:	if (mp3_mad->volume == MIX_MAX_VOLUME) {
+music_mad.c:	  memcpy(out, mp3_mad->output_buffer + mp3_mad->output_begin, num_bytes);
+music_mad.c:	  SDL_MixAudio(out, mp3_mad->output_buffer + mp3_mad->output_begin,
+music_mad.c:				   num_bytes, mp3_mad->volume);
+music_mad.c:	mp3_mad->output_begin += num_bytes;
+music_mad.c:  if (mad_timer_compare(mp3_mad->next_frame_start, target) > 0) {
+music_mad.c:	mp3_mad->frames_read = 0;
+music_mad.c:	mad_timer_reset(&mp3_mad->next_frame_start);
+music_mad.c:	mp3_mad->status &= ~MS_error_flags;
+music_mad.c:	mp3_mad->output_begin = 0;
+music_mad.c:	mp3_mad->output_end = 0;
+music_mad.c:	SDL_RWseek(mp3_mad->rw, 0, RW_SEEK_SET);
+music_mad.c:  while (mad_timer_compare(mp3_mad->next_frame_start, target) < 0) {
+music_mad.c:	  if ((mp3_mad->status & MS_error_flags) != 0) {
+music_mad.c:		mp3_mad->status &= ~MS_playing;
+music_mad.c:  mp3_mad->volume = volume;
