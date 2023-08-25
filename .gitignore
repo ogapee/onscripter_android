@@ -1,0 +1,9 @@
+.gradle/*
+.idea/*
+app/build/*
+app/release/*
+app/src/main/cpp/application/*
+asset_pack/build/intermediates/asset_pack_manifest/AndroidManifest.xml
+gradle/*
+gradlew
+gradlew.bat
