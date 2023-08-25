@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">ONScripter</string>
-    <string name="version">ONScripter 20230323\nStudio O.G.A. Ogapee</string>
+    <string name="version">ONScripter 20230824\nStudio O.G.A. Ogapee</string>
     <bool name="use_launcher">true</bool>
     <integer name="button_alpha">1</integer>
     <bool name="render_font_outline">true</bool>
