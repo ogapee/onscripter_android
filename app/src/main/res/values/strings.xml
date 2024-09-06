@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">ONScripter</string>
-    <string name="version">ONScripter 20230824\nStudio O.G.A. Ogapee</string>
+    <string name="version">ONScripter 20240906\nStudio O.G.A. Ogapee</string>
     <bool name="use_launcher">true</bool>
     <integer name="button_alpha">1</integer>
     <bool name="render_font_outline">true</bool>
@@ -25,5 +25,5 @@
     <string name="menu_privacy_policy">Privacy Policy</string>
     <string name="menu_quit">Quit</string>
     <string name="privacy_policy_message">Show our Privacy Policy on</string>
-    <string name="privacy_policy_url">https://onscripter.osdn.jp/privacy_policy.html</string>
+    <string name="privacy_policy_url">https://ogapee.github.io/www/privacy_policy.html</string>
 </resources>
